@@ -1,0 +1,25 @@
+{
+  "name": "bequest",
+  "version": "1.0.0",
+  "description": "Managing a bequest account on the Near blockchain via telegram webapp using the Hot wallet",
+  "main": "bot.js",
+  "scripts": {
+    "start": "node bot.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "bs58": "^5.0.0",
+    "dotenv": "^6.2.0",
+    "js-sha256": "^0.11.0",
+    "near-api-js": "^0.44.2",
+    "polka": "^0.5.2",
+    "sha1": "^1.1.1",
+    "telegraf": "^3.38.0",
+    "uuid4": "2.0.3"
+  },
+  "engines": {
+    "node": "17.9.1"
+  },
+  "author": "Johnny Doe",
+  "license": "MIT"
+}
