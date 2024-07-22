@@ -1,0 +1,394 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <meta name="viewport" content="width=540, initial-scale=0.7">
+    <meta name="referrer" content="strict-origin-when-cross-origin"><title>Bequest</title>
+    <style> 
+      a, a:link, a:visited, a:focus, a:hover, a:active {outline:none; text-decoration:none; color:#2c3034;}
+      .h1,h2,h3,h4,h5,h6 {margin:20px 0 0 10px; font-family: CabinetGrotesk,system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Noto Sans,Ubuntu,Cantarell,Helvetica Neue,Oxygen,Open Sans,sans-serif; font-weight:800;}	 
+      .input {margin:10px 0 10px; font-family: CabinetGrotesk,system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Noto Sans,Ubuntu,Cantarell,Helvetica Neue,Oxygen,Open Sans,sans-serif; font-weight:600; font-size:24px; color:#2c3034; border-color:#2c3034; border:0.3px solid; background-color:#EBDEDC; width:100%; outline:none; padding:10px;}	 
+      .button:hover {background:#ffcc4a;}	
+      .button {border-radius:30px; cursor:pointer; font-size:28px; border:2px solid; align-items:center; justify-content:center; background:#f7b302; border-color:#2c3034; color:#2c3034; box-shadow:4px 4px #2c3034; display:inline-flex; font-weight:600; font-family: Inter, Lato, Tahoma, sans-serif;}
+      .button.pink {background:#fd84e3}
+      .button.pink:hover {background:#fd9be8}
+      .social {width:2.5rem; height:2.5rem; border-radius:32px; outline:none; border:0; background-color:#EBDEDC; cursor:hand;}
+      .social:hover {opacity:.8}
+      .cancel_button {cursor:pointer; width: auto !important; font-size:16px; border:none; background:none; border-radius:0px; padding:0px; min-height:50px; height:auto; color:#A34757; margin: 10px auto;display:block;}
+      .circle {width:100%; height:90%; display:flex; align-items:center; justify-content:center;}
+      .circle__item {width:200px; height:200px;}
+      .circle__spinner {width:200px; height:200px; & .path {stroke: hsl(210, 70, 75); stroke-linecap:round; animation: dash 2s linear infinite;}}
+      @keyframes dash { 0% {stroke-dasharray: 1, 150; stroke-dashoffset:0;} 100% {stroke-dasharray: 130, 150; stroke-dashoffset:0;}}	
+    </style>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  </head>
+  <body style="font-family: Inter, Lato, Tahoma, sans-serifInter,system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Noto Sans,Ubuntu,Cantarell,Helvetica Neue,Oxygen,Open Sans,sans-serif; font-size:24px; margin:0px; color:#A34757; background-color:#F3EBEA;"> 
+    <div id="alert-info" style="word-wrap:break-word; width:100%; height:auto; margin:auto; display:none; position:absolute; left:50%; transform:translate(-50%, 0px); text-align:center; font-weight:600; color:#ffffff; background-color:#ff8100; font-size:28px; top:0px; padding:10px;"></div>
+    <div  id='login_div' style='font-weight:600; background-color:#232629; color:#FDBD1D; padding:10px; text-align:center; font-size:28px;'><span id='login'>Create bequest account</span></div>
+    <div id='settings' style='display:none; text-align:left; font-size:24px; padding:20px 20px 0 20px; color:#2c3034;'>
+      <a href="#" onclick="select_page('main');"><div style='display:flex;justify-content:end;'><svg width="30px" height="30px" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="48" height="48" fill="white" fill-opacity="0.01"/><path fill-rule="evenodd" clip-rule="evenodd" d="M44 40.8361C39.1069 34.8632 34.7617 31.4739 30.9644 30.6682C27.1671 29.8625 23.5517 29.7408 20.1182 30.303V41L4 23.5453L20.1182 7V17.167C26.4667 17.2172 31.8638 19.4948 36.3095 24C40.7553 28.5052 43.3187 34.1172 44 40.8361Z" fill="#FDBD1D" stroke="#000000" stroke-width="2" stroke-linejoin="round"/></svg></div></a>
+      <div style="margin-top:40px;"><button class="button pink" style="width:100%; height:100px;" onclick="destroy();" tabindex="0">Destroy the bequest</button></div>
+      <div style="margin-top:20px;"><button class="button" style="width:100%; height:100px;" onclick="logout();" tabindex="1">Log out</button></div>	
+      <div style="margin-top:80px;"><button class="button" style="width:100%; height:100px;" onclick="window.open('https://telegra.ph/Bequest-User-Manual-07-12','_blank');" tabindex="2">User manual</button></div>	
+    </div>
+    <div id='init' style='display:none; text-align:left; font-size:24px; padding:20px 20px 0 20px; color:#2c3034;'>
+      <div style='display:flex;'>
+        <a href="https://telegra.ph/Bequest-User-Manual-07-12" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" class="svg-icon" style="width: 1em; height:1em; vertical-align:middle; fill:#2c3034; overflow:hidden;" viewBox="0 0 1028 1024" version="1.1"><path d="M983.678752 314.585575c-25.849513-60.781287-62.777388-115.474464-109.785575-162.482651s-101.701365-83.936062-162.482651-109.785575C648.433528 15.569591 581.663938 1.996101 512.998051 1.996101c-68.665887 0-135.435478 13.573489-198.412476 40.321248-60.781287 25.849513-115.474464 62.777388-162.482651 109.785575s-83.936062 101.701365-109.785575 162.482651C15.569591 377.562573 1.996101 444.332164 1.996101 512.998051c0 68.665887 13.573489 135.435478 40.321248 198.412475 25.849513 60.781287 62.777388 115.474464 109.785575 162.482651s101.701365 83.936062 162.482651 109.785575c62.976998 26.747758 129.746589 40.321248 198.412476 40.321248 68.665887 0 135.435478-13.573489 198.412475-40.321248 60.781287-25.849513 115.474464-62.777388 162.482651-109.785575s83.936062-101.701365 109.785575-162.482651c26.747758-62.976998 40.321248-129.746589 40.321248-198.412475 0-68.665887-13.573489-135.435478-40.321248-198.412476zM673.684211 894.752437c-51.00039 21.6577-105.094737 32.636257-160.68616 32.636257s-109.68577-10.978558-160.68616-32.636257c-49.403509-21.058869-93.816764-51.100195-131.9423-89.125926-38.125536-38.125536-68.067057-82.438986-89.125926-131.9423-21.6577-51.00039-32.636257-105.094737-32.636258-160.68616s10.978558-109.68577 32.636258-160.68616c21.058869-49.403509 51.100195-93.816764 89.125926-131.9423 38.125536-38.125536 82.438986-68.067057 131.9423-89.125926 51.00039-21.6577 105.094737-32.636257 160.68616-32.636258s109.68577 10.978558 160.68616 32.636258c49.403509 21.058869 93.816764 51.100195 131.9423 89.125926 38.125536 38.125536 68.067057 82.438986 89.125926 131.9423 21.6577 51.00039 32.636257 105.094737 32.636257 160.68616s-10.978558 109.68577-32.636257 160.68616c-21.058869 49.403509-51.100195 93.816764-89.125926 131.9423-38.125536 38.025731-82.538791 68.067057-131.9423 89.125926z"/><path d="M476.868616 808.820273h74.554386c8.283821 0 14.97076-6.68694 14.97076-14.97076v-68.366472c0-8.283821-6.68694-14.97076-14.97076-14.97076h-74.554386c-8.283821 0-14.97076 6.68694-14.97076 14.97076v68.366472c0 8.283821 6.68694 14.97076 14.97076 14.97076zM687.557115 373.270955c-3.293567-51.299805-19.262378-90.922417-47.307602-117.869785-28.045224-26.947368-68.266667-41.119688-119.566472-42.217544h-0.998051c-58.585575 2.195712-104.096686 19.461988-135.235867 51.100195-31.039376 31.638207-47.906433 77.847953-50.102144 137.331774-0.299415 8.483431 6.487329 15.469786 14.97076 15.469785h65.272514c8.084211 0 14.77115-6.487329 14.970761-14.57154 1.896296-72.558285 30.440546-107.490058 90.024171-109.68577h1.297466c48.904483 2.095906 73.65614 26.947368 77.548538 77.947758 0 0.499025 0.099805 1.097856 0 1.596882-0.59883 26.548148-19.961014 59.0846-57.687329 96.810916-51.100195 48.904483-75.951657 93.118129-75.951657 135.036257v55.990643c0 8.283821 6.68694 14.97076 14.97076 14.970761h68.366472c8.283821 0 14.97076-6.68694 14.97076-14.970761v-65.272514c0-11.377778 7.8846-32.736062 45.211696-70.162963 52.497466-50.301754 79.145419-101.002729 79.145419-150.605848l0.099805-0.898246z"/></svg></a>
+        <div style='width:100%;'>&nbsp;</div>
+        <div id="logout" style="cursor:hand;" onclick="logout();"><svg xmlns="http://www.w3.org/2000/svg" fill="none" width="28" height="27" viewBox="0 0 24 24" ><path d="M17 16L21 12M21 12L17 8M21 12L7 12M13 16V17C13 18.6569 11.6569 20 10 20H6C4.34315 20 3 18.6569 3 17V7C3 5.34315 4.34315 4 6 4H10C11.6569 4 13 5.34315 13 7V8" stroke="#374151" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg></div>
+      </div>
+      <div>
+        <div style="margin-top:20px;"><textarea id="heirs" placeholder="enter heirs accounts..." class="input" style="border-radius:20px; height:120px;" tabindex="0"></textarea></div>
+        <input id="period" type="text"  autocomplete="off" onkeyup="this.value=this.value.replace(/[^\d]/,'')" maxlength="3" oninput="" placeholder="activation period in days" class="input" style="border-radius:14px;" value="" tabindex="1">
+        <div style="margin-top:20px;"><button class="button" style="width:100%; height:100px;" onclick="create();" tabindex="2">Create a bequest</button></div>	
+      </div>
+    </div>
+    <div id='sign' style='display:none; text-align:center; font-size:24px; padding:20px 20px 0 20px; color:#2c3034;'>
+      <div style='display:flex;'>
+        <a href="https://telegra.ph/Bequest-User-Manual-07-12" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" class="svg-icon" style="width: 1em; height:1em; vertical-align:middle; fill:#2c3034; overflow:hidden;" viewBox="0 0 1028 1024" version="1.1"><path d="M983.678752 314.585575c-25.849513-60.781287-62.777388-115.474464-109.785575-162.482651s-101.701365-83.936062-162.482651-109.785575C648.433528 15.569591 581.663938 1.996101 512.998051 1.996101c-68.665887 0-135.435478 13.573489-198.412476 40.321248-60.781287 25.849513-115.474464 62.777388-162.482651 109.785575s-83.936062 101.701365-109.785575 162.482651C15.569591 377.562573 1.996101 444.332164 1.996101 512.998051c0 68.665887 13.573489 135.435478 40.321248 198.412475 25.849513 60.781287 62.777388 115.474464 109.785575 162.482651s101.701365 83.936062 162.482651 109.785575c62.976998 26.747758 129.746589 40.321248 198.412476 40.321248 68.665887 0 135.435478-13.573489 198.412475-40.321248 60.781287-25.849513 115.474464-62.777388 162.482651-109.785575s83.936062-101.701365 109.785575-162.482651c26.747758-62.976998 40.321248-129.746589 40.321248-198.412475 0-68.665887-13.573489-135.435478-40.321248-198.412476zM673.684211 894.752437c-51.00039 21.6577-105.094737 32.636257-160.68616 32.636257s-109.68577-10.978558-160.68616-32.636257c-49.403509-21.058869-93.816764-51.100195-131.9423-89.125926-38.125536-38.125536-68.067057-82.438986-89.125926-131.9423-21.6577-51.00039-32.636257-105.094737-32.636258-160.68616s10.978558-109.68577 32.636258-160.68616c21.058869-49.403509 51.100195-93.816764 89.125926-131.9423 38.125536-38.125536 82.438986-68.067057 131.9423-89.125926 51.00039-21.6577 105.094737-32.636257 160.68616-32.636258s109.68577 10.978558 160.68616 32.636258c49.403509 21.058869 93.816764 51.100195 131.9423 89.125926 38.125536 38.125536 68.067057 82.438986 89.125926 131.9423 21.6577 51.00039 32.636257 105.094737 32.636257 160.68616s-10.978558 109.68577-32.636257 160.68616c-21.058869 49.403509-51.100195 93.816764-89.125926 131.9423-38.125536 38.025731-82.538791 68.067057-131.9423 89.125926z"/><path d="M476.868616 808.820273h74.554386c8.283821 0 14.97076-6.68694 14.97076-14.97076v-68.366472c0-8.283821-6.68694-14.97076-14.97076-14.97076h-74.554386c-8.283821 0-14.97076 6.68694-14.97076 14.97076v68.366472c0 8.283821 6.68694 14.97076 14.97076 14.97076zM687.557115 373.270955c-3.293567-51.299805-19.262378-90.922417-47.307602-117.869785-28.045224-26.947368-68.266667-41.119688-119.566472-42.217544h-0.998051c-58.585575 2.195712-104.096686 19.461988-135.235867 51.100195-31.039376 31.638207-47.906433 77.847953-50.102144 137.331774-0.299415 8.483431 6.487329 15.469786 14.97076 15.469785h65.272514c8.084211 0 14.77115-6.487329 14.970761-14.57154 1.896296-72.558285 30.440546-107.490058 90.024171-109.68577h1.297466c48.904483 2.095906 73.65614 26.947368 77.548538 77.947758 0 0.499025 0.099805 1.097856 0 1.596882-0.59883 26.548148-19.961014 59.0846-57.687329 96.810916-51.100195 48.904483-75.951657 93.118129-75.951657 135.036257v55.990643c0 8.283821 6.68694 14.97076 14.97076 14.970761h68.366472c8.283821 0 14.97076-6.68694 14.97076-14.970761v-65.272514c0-11.377778 7.8846-32.736062 45.211696-70.162963 52.497466-50.301754 79.145419-101.002729 79.145419-150.605848l0.099805-0.898246z"/></svg></a>
+        <div style='width:100%;'>&nbsp;</div>
+        <div id="logout" style="cursor:hand;" onclick="logout();"><svg xmlns="http://www.w3.org/2000/svg" fill="none" width="28" height="27" viewBox="0 0 24 24" ><path d="M17 16L21 12M21 12L17 8M21 12L7 12M13 16V17C13 18.6569 11.6569 20 10 20H6C4.34315 20 3 18.6569 3 17V7C3 5.34315 4.34315 4 6 4H10C11.6569 4 13 5.34315 13 7V8" stroke="#374151" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg></div>
+      </div>	
+      <div style="margin-top:20px;"><button class="button" style="width:100%; height:100px;" onclick="create_func_key();" tabindex="0">Login by Hot wallet</button></div>	
+      <div style="margin-top:30px; text-align:center;">
+        <h2>to receive an inheritance</h2>
+        <input id="heir_account" type="text" autocomplete="off" maxlength="64" oninput="" placeholder="enter your account..." class="input" style="margin-top:30px; border-radius:14px;" value="" tabindex="3">
+        <div style="margin:20px 0 20px;"><button class="button pink" style="width:100%; height:100px;" onclick="get_inheritance();" tabindex="1">Get an inheritance</button></div>	
+      </div>	
+    </div>
+    <div id='main' style='display:none; text-align:left; font-size:24px; padding:20px 20px 0 20px; color:#2c3034;'>
+      <a href="#" onclick="select_page('settings');"><div style='display:flex;justify-content:end;'><svg height="30px" width="30px" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xml:space="preserve"><path style="fill:#FFCA12;" d="M501.801,313.316V198.684h-52.94c-4.002-13.486-9.367-26.387-15.958-38.527l37.434-37.434 l-81.059-81.058l-37.434,37.434c-12.14-6.592-25.041-11.956-38.527-15.958V10.199H198.684v52.94 c-13.486,4.002-26.387,9.367-38.527,15.958l-37.434-37.433l-81.058,81.058l37.434,37.434c-6.592,12.14-11.956,25.041-15.958,38.527 H10.199v114.634h52.94c4.002,13.486,9.367,26.387,15.958,38.527l-37.433,37.433l81.058,81.058l37.434-37.434 c12.14,6.592,25.041,11.956,38.527,15.958v52.941h114.634v-52.94c13.486-4.002,26.387-9.367,38.527-15.958l37.434,37.434 l81.058-81.058l-37.434-37.434c6.592-12.14,11.956-25.041,15.958-38.527h52.94V313.316z M256,348.038 c-50.831,0-92.038-41.207-92.038-92.038s41.207-92.038,92.038-92.038s92.038,41.207,92.038,92.038S306.831,348.038,256,348.038z"/><path d="M313.316,512H198.684c-5.633,0-10.199-4.566-10.199-10.199v-45.473c-9.042-3.045-17.876-6.704-26.398-10.931l-32.153,32.153 c-3.982,3.983-10.441,3.983-14.424,0L34.451,396.49c-3.983-3.983-3.983-10.441,0-14.424l32.153-32.153 c-4.229-8.52-7.886-17.355-10.932-26.398H10.199C4.566,323.516,0,318.95,0,313.317V198.684c0-5.633,4.566-10.199,10.199-10.199 h45.473c3.045-9.043,6.704-17.876,10.932-26.398l-32.153-32.153c-3.983-3.983-3.983-10.441,0-14.424l81.059-81.059 c3.982-3.983,10.441-3.983,14.424,0l32.153,32.153c8.521-4.229,17.356-7.886,26.398-10.932V10.199 C188.484,4.566,193.051,0,198.684,0h114.634c5.633,0,10.199,4.566,10.199,10.199v45.473c9.042,3.045,17.876,6.704,26.398,10.932 l32.153-32.153c3.982-3.983,10.441-3.983,14.424,0l81.059,81.059c3.983,3.983,3.983,10.441,0,14.424l-32.153,32.153 c4.229,8.52,7.886,17.354,10.931,26.398h45.472c5.633,0,10.199,4.566,10.199,10.199v114.634c0,5.633-4.566,10.199-10.199,10.199 h-45.473c-3.045,9.044-6.704,17.877-10.931,26.398l32.153,32.153c3.983,3.983,3.983,10.441,0,14.424L396.49,477.55 c-3.982,3.983-10.441,3.983-14.424,0l-32.153-32.153c-8.521,4.229-17.356,7.886-26.398,10.931v45.472 C323.516,507.434,318.949,512,313.316,512z M208.883,491.602h94.236v-42.741c0-4.515,2.969-8.493,7.298-9.778 c12.688-3.766,24.989-8.861,36.563-15.144c3.969-2.155,8.883-1.443,12.079,1.751l30.222,30.222l66.634-66.634l-30.222-30.222 c-3.193-3.194-3.906-8.109-1.751-12.079c6.283-11.57,11.377-23.871,15.144-36.563c1.285-4.329,5.263-7.298,9.778-7.298h42.739 v-94.236h-42.741c-4.515,0-8.493-2.969-9.778-7.298c-3.767-12.691-8.861-24.992-15.144-36.563c-2.155-3.97-1.443-8.885,1.751-12.079 l30.222-30.222l-66.634-66.634l-30.222,30.222c-3.194,3.194-8.107,3.906-12.079,1.751c-11.573-6.284-23.874-11.378-36.563-15.144 c-4.329-1.285-7.298-5.263-7.298-9.778V20.398h-94.236v42.741c0,4.515-2.969,8.493-7.298,9.778 c-12.688,3.766-24.989,8.861-36.563,15.144c-3.97,2.154-8.885,1.442-12.079-1.751l-30.222-30.222l-66.634,66.634l30.222,30.222 c3.193,3.194,3.906,8.109,1.751,12.079c-6.283,11.572-11.378,23.873-15.144,36.563c-1.285,4.329-5.263,7.298-9.778,7.298H20.398 v94.236h42.741c4.515,0,8.493,2.969,9.778,7.298c3.766,12.689,8.861,24.99,15.144,36.563c2.155,3.97,1.443,8.885-1.751,12.079 l-30.222,30.222l66.634,66.634l30.222-30.222c3.195-3.193,8.109-3.905,12.079-1.751c11.573,6.284,23.874,11.378,36.563,15.144 c4.329,1.285,7.298,5.263,7.298,9.778v42.738H208.883z M256,358.237c-56.373,0-102.237-45.863-102.237-102.237 S199.627,153.763,256,153.763S358.237,199.627,358.237,256S312.373,358.237,256,358.237z M256,174.162 c-45.125,0-81.838,36.713-81.838,81.838c0,45.125,36.713,81.838,81.838,81.838c45.126,0,81.838-36.713,81.838-81.838 S301.126,174.162,256,174.162z"/> <path d="M256,394.954c-5.633,0-10.199-4.566-10.199-10.199c0-5.633,4.566-10.199,10.199-10.199 c50.206,0,95.15-31.792,111.838-79.111c1.873-5.312,7.697-8.099,13.011-6.226c5.312,1.874,8.099,7.698,6.226,13.011 C367.515,357.69,314.84,394.954,256,394.954z"/><path d="M384.62,272.319c-0.16,0-0.321-0.003-0.483-0.011c-5.627-0.262-9.975-5.036-9.713-10.664 c0.088-1.875,0.132-3.774,0.132-5.643c0-5.633,4.566-10.199,10.199-10.199c5.633,0,10.199,4.566,10.199,10.199 c0,2.186-0.052,4.404-0.154,6.595C394.545,268.06,390.034,272.319,384.62,272.319z"/></svg></div></a>
+      <div id='main_content'></div>
+    </div>
+    <div id='no_account' style='display:none; text-align:left; font-size:24px; padding:20px 20px 0 20px; color:#2c3034;'>
+      <a href="https://telegra.ph/Bequest-User-Manual-07-12" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" class="svg-icon" style="width: 1em; height:1em; vertical-align:middle; fill:#2c3034; overflow:hidden;" viewBox="0 0 1028 1024" version="1.1"><path d="M983.678752 314.585575c-25.849513-60.781287-62.777388-115.474464-109.785575-162.482651s-101.701365-83.936062-162.482651-109.785575C648.433528 15.569591 581.663938 1.996101 512.998051 1.996101c-68.665887 0-135.435478 13.573489-198.412476 40.321248-60.781287 25.849513-115.474464 62.777388-162.482651 109.785575s-83.936062 101.701365-109.785575 162.482651C15.569591 377.562573 1.996101 444.332164 1.996101 512.998051c0 68.665887 13.573489 135.435478 40.321248 198.412475 25.849513 60.781287 62.777388 115.474464 109.785575 162.482651s101.701365 83.936062 162.482651 109.785575c62.976998 26.747758 129.746589 40.321248 198.412476 40.321248 68.665887 0 135.435478-13.573489 198.412475-40.321248 60.781287-25.849513 115.474464-62.777388 162.482651-109.785575s83.936062-101.701365 109.785575-162.482651c26.747758-62.976998 40.321248-129.746589 40.321248-198.412475 0-68.665887-13.573489-135.435478-40.321248-198.412476zM673.684211 894.752437c-51.00039 21.6577-105.094737 32.636257-160.68616 32.636257s-109.68577-10.978558-160.68616-32.636257c-49.403509-21.058869-93.816764-51.100195-131.9423-89.125926-38.125536-38.125536-68.067057-82.438986-89.125926-131.9423-21.6577-51.00039-32.636257-105.094737-32.636258-160.68616s10.978558-109.68577 32.636258-160.68616c21.058869-49.403509 51.100195-93.816764 89.125926-131.9423 38.125536-38.125536 82.438986-68.067057 131.9423-89.125926 51.00039-21.6577 105.094737-32.636257 160.68616-32.636258s109.68577 10.978558 160.68616 32.636258c49.403509 21.058869 93.816764 51.100195 131.9423 89.125926 38.125536 38.125536 68.067057 82.438986 89.125926 131.9423 21.6577 51.00039 32.636257 105.094737 32.636257 160.68616s-10.978558 109.68577-32.636257 160.68616c-21.058869 49.403509-51.100195 93.816764-89.125926 131.9423-38.125536 38.025731-82.538791 68.067057-131.9423 89.125926z"/><path d="M476.868616 808.820273h74.554386c8.283821 0 14.97076-6.68694 14.97076-14.97076v-68.366472c0-8.283821-6.68694-14.97076-14.97076-14.97076h-74.554386c-8.283821 0-14.97076 6.68694-14.97076 14.97076v68.366472c0 8.283821 6.68694 14.97076 14.97076 14.97076zM687.557115 373.270955c-3.293567-51.299805-19.262378-90.922417-47.307602-117.869785-28.045224-26.947368-68.266667-41.119688-119.566472-42.217544h-0.998051c-58.585575 2.195712-104.096686 19.461988-135.235867 51.100195-31.039376 31.638207-47.906433 77.847953-50.102144 137.331774-0.299415 8.483431 6.487329 15.469786 14.97076 15.469785h65.272514c8.084211 0 14.77115-6.487329 14.970761-14.57154 1.896296-72.558285 30.440546-107.490058 90.024171-109.68577h1.297466c48.904483 2.095906 73.65614 26.947368 77.548538 77.947758 0 0.499025 0.099805 1.097856 0 1.596882-0.59883 26.548148-19.961014 59.0846-57.687329 96.810916-51.100195 48.904483-75.951657 93.118129-75.951657 135.036257v55.990643c0 8.283821 6.68694 14.97076 14.97076 14.970761h68.366472c8.283821 0 14.97076-6.68694 14.97076-14.970761v-65.272514c0-11.377778 7.8846-32.736062 45.211696-70.162963 52.497466-50.301754 79.145419-101.002729 79.145419-150.605848l0.099805-0.898246z"/></svg></a>
+      <input id="bequest_account" type="text" autocomplete="off" maxlength="64" oninput="" placeholder="enter bequest account..." class="input" style="margin-top:20px; border-radius:14px;" value="" tabindex="0">
+      <div style="margin-top:20px;"><button class="button" style="width:100%; height:100px;" onclick="no_account();" tabindex="1">Next</button></div>	
+    </div>
+    <div id='show_key' style='display:none; padding:20px;'>
+      <div title="Copy" style="padding:0 10px; display:flex; align-items:center; justify-content:right;"><span style="cursor:copy;" onclick="copy_key('key_last');"><svg width="32" height="32" viewBox="0 0 18 19" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 7.48071H8.25C7.42157 7.48071 6.75 8.15229 6.75 8.98071V15.7307C6.75 16.5591 7.42157 17.2307 8.25 17.2307H15C15.8284 17.2307 16.5 16.5591 16.5 15.7307V8.98071C16.5 8.15229 15.8284 7.48071 15 7.48071Z" stroke="#2c3034" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M3.75 11.9807H3C2.60218 11.9807 2.22064 11.8227 1.93934 11.5414C1.65804 11.2601 1.5 10.8785 1.5 10.4807V3.73071C1.5 3.33289 1.65804 2.95136 1.93934 2.67005C2.22064 2.38875 2.60218 2.23071 3 2.23071H9.75C10.1478 2.23071 10.5294 2.38875 10.8107 2.67005C11.092 2.95136 11.25 3.33289 11.25 3.73071V4.48071" stroke="#2c3034" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></div>
+      <div><textarea id="key_last" class="input" style="border-radius:20px; height:160px; font-size:20px; color:#606080;" tabindex="0"></textarea></div>
+      <h3 style="text-align:center; color:#2c3034;">copy private key and</h3>
+      <div style="margin:20px 0 20px;"><button class="button pink" style="width:100%; height:100px;" onclick="window.open('https://t.me/herewalletbot/app');" tabindex="1">import into Hot wallet</button></div>	
+    </div>			
+    <div id='login_inheritance' style='display:none; padding:20px;'>
+      <h3 id='inheritance_text' style='text-align:center; font-size:28px; font-weight:400; padding:20px 20px 0 20px; color:#2c3034;'></h3>
+      <div style="margin-top:40px;"><button class="button pink" style="width:100%; height:100px;" onclick="create_func_key(1);" tabindex="0">Login by Hot wallet</button></div>	
+    </div>
+    <div id='get_inheritance' style='display:none; padding:20px;'>
+      <h3 id='claim_text' style='text-align:center; font-size:28px; font-weight:400; padding:20px 20px 0 20px; color:#2c3034;'></h3>
+      <div style="margin-top:40px;"><button class="button" style="width:100%; height:100px;" onclick="claim();" tabindex="0">Claim an inheritance</button></div>	
+    </div>
+    <div id='message' style='display:none;'>
+      <a id="return_url" href="#" onclick="history.back()"><div id="return" style='padding:10px; display:flex; justify-content:end;'><svg width="30px" height="30px" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="48" height="48" fill="white" fill-opacity="0.01"/><path fill-rule="evenodd" clip-rule="evenodd" d="M44 40.8361C39.1069 34.8632 34.7617 31.4739 30.9644 30.6682C27.1671 29.8625 23.5517 29.7408 20.1182 30.303V41L4 23.5453L20.1182 7V17.167C26.4667 17.2172 31.8638 19.4948 36.3095 24C40.7553 28.5052 43.3187 34.1172 44 40.8361Z" fill="#FDBD1D" stroke="#000000" stroke-width="2" stroke-linejoin="round"/></svg></div></a>
+      <div id='message_text' style='display:block; margin-top:150px; padding:20px; align-items:end; text-align:center; font-size:24px; font-weight:600; color:#404040;'></div>
+    </div>
+    <div id='about' style='display:none;'>
+      <img style="width:100%;" src="data:image/jpeg;base64,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" />
+      <div style='text-align:center; font-size:24px; padding:20px 20px 0 20px; color:#404040;'>
+        <h5>The service is intended for situations where you need to insure against loss of access to cryptocurrency funds due to death, illness, imprisonment, loss of keys.</h5>
+        <h5>The way the service works is simple: a special insurance account is created, all keys of the owner account are copied, a contract is established with the registered heir accounts, as well as an activation period in case of inactivity of the owner.</h5>
+        <h5>The owner periodically click a button in the Telegram WebApp, calling the contract method, which resets the time counter and only the owner has access to the account.</h5>
+        <h5>If there was no activity of the owner for more than the activation period, then heir accounts have the opportunity to add their key to the insurance account and gain access to it.</h5>
+        <div style="margin-top:25px; text-align:center;">
+          <button class="button pink" style="width:220px; height:100px; margin:20px 0;" onclick="window.open('https://t.me/bequest_bot/bequest','_blank');" tabindex="0">Run WebApp</button><span style="width:20px">&nbsp;</span>
+          <button class="button" 		style="width:220px; height:100px; margin:0px 0;" onclick="window.open('https://telegra.ph/Bequest-User-Manual-07-12');" tabindex="2">User Manual</button>
+        </div>	
+        <div style="display:flex; align-items:center; justify-content:center; flex-wrap:wrap; margin:50px 0; gap:8px">
+          <button type="button" class="social" onclick="window.open('https://t.me/near_bequest','_blank');"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M3.2032 11.7422C7.90081 9.69587 11.0333 8.34684 12.6006 7.69505C17.0757 5.83406 18.0056 5.51079 18.6117 5.50011C18.745 5.49777 19.043 5.5308 19.2361 5.68743C19.3991 5.81968 19.444 5.99834 19.4654 6.12374C19.4869 6.24913 19.5136 6.53478 19.4924 6.75798C19.2499 9.30553 18.2006 15.4878 17.6667 18.341C17.4408 19.5484 16.9961 19.9532 16.5655 19.9928C15.6297 20.0789 14.9191 19.3745 14.0128 18.7805C12.5945 17.851 11.7933 17.2724 10.4166 16.3653C8.82563 15.3171 9.857 14.741 10.7637 13.7994C11.001 13.553 15.124 9.80349 15.2038 9.46335C15.2138 9.4208 15.2231 9.26223 15.1289 9.1785C15.0346 9.09477 14.8956 9.1234 14.7952 9.14618C14.653 9.17845 12.3873 10.6757 7.99817 13.6379C7.35507 14.0794 6.77256 14.2946 6.25065 14.2833C5.6753 14.2709 4.56853 13.958 3.74577 13.6906C2.73662 13.3627 1.93457 13.1893 2.00441 12.6323C2.04078 12.3422 2.44038 12.0454 3.2032 11.7422Z" fill="#48BAF3"></path></svg></button>
+          <button type="button" class="social" onclick="window.open('https://youtu.be/AP6jqr_ED9I','_blank');"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M23.4981 6.22325C23.2216 5.19 22.4095 4.37801 21.3763 4.10142C19.5054 3.59961 12 3.59961 12 3.59961C12 3.59961 4.49456 3.59961 2.62363 4.10142C1.59039 4.37801 0.778399 5.19 0.50181 6.22325C1.50211e-07 8.09417 0 12 0 12C0 12 1.50211e-07 15.9058 0.50181 17.7768C0.778399 18.81 1.59039 19.622 2.62363 19.8985C4.49456 20.4004 12 20.4004 12 20.4004C12 20.4004 19.5054 20.4004 21.3763 19.8985C22.4095 19.622 23.2216 18.81 23.4981 17.7768C24 15.9058 24 12 24 12C24 12 23.998 8.09417 23.4981 6.22325Z" fill="#FF0000"></path><path d="M9.59766 15.6001L15.8328 12.0005L9.59766 8.40088V15.6001Z" fill="white"></path></svg></button>
+          <button type="button" class="social" onclick="window.open('https://github.com/nearwatch/bequest','_blank');"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 0C5.374 0 0 5.373 0 12C0 17.302 3.438 21.8 8.207 23.387C8.806 23.498 9 23.126 9 22.81V20.576C5.662 21.302 4.967 19.16 4.967 19.16C4.421 17.773 3.634 17.404 3.634 17.404C2.545 16.659 3.717 16.675 3.717 16.675C4.922 16.759 5.556 17.912 5.556 17.912C6.626 19.746 8.363 19.216 9.048 18.909C9.155 18.134 9.466 17.604 9.81 17.305C7.145 17 4.343 15.971 4.343 11.374C4.343 10.063 4.812 8.993 5.579 8.153C5.455 7.85 5.044 6.629 5.696 4.977C5.696 4.977 6.704 4.655 8.997 6.207C9.954 5.941 10.98 5.808 12 5.803C13.02 5.808 14.047 5.941 15.006 6.207C17.297 4.655 18.303 4.977 18.303 4.977C18.956 6.63 18.545 7.851 18.421 8.153C19.191 8.993 19.656 10.064 19.656 11.374C19.656 15.983 16.849 16.998 14.177 17.295C14.607 17.667 15 18.397 15 19.517V22.81C15 23.129 15.192 23.504 15.801 23.386C20.566 21.797 24 17.3 24 12C24 5.373 18.627 0 12 0Z" fill="#606060"></path></svg></button>
+        </div>
+        <h6 style="margin:20px 0; text-align:center; color:#A0A0A0; font-weight:400;">© Johnny Doe, 2024</h6>
+      </div>
+    </div>
+    <div id='loading' style=''><div id='loading' class="circle"><div class="circle__item"><svg class="circle__spinner" viewBox="0 0 100 100"><circle class="path" cx="50" cy="50" r="20" fill="none" stroke="#A34757" stroke-width="1"></circle></svg></div></div></div>
+    <script src="https://cdn.jsdelivr.net/npm/near-api-js@0.44.0/dist/near-api-js.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/base-58@0.0.1/Base58.min.js"></script>
+    <script>
+    const addressValid = (address, sub) => /^([a-z0-9][a-z0-9\.\-\_]+?\.(near|tg|testnet))$/i.test(address) && (!sub || address.split('.').length > 2); 
+    const network = (account) => account?.endsWith('.testnet')?'testnet':'mainnet';
+    const isDifferentNet = (acc1, acc2) => network(acc1)!=network(acc2);
+    const nodeUrl = (net) => 'https://rpc.'+net+'.pagoda.co';
+    const domain = 'https://bequest.doe.cx';
+    const sleep = (millis) => new Promise(resolve => setTimeout(resolve, millis))
+    const dayms = 86400000;
+    const core_hash = '7pimP1z8jvQoYevMoMSh1BJEdtx3EMNf5kj8zW2gbJTg';
+    let bequest_account, owner_account, heir;
+    main();
+	
+    async function main(){
+      let initData, hot_acc;
+      if (window.Telegram?.WebApp.initData.length){
+        initData = window.Telegram.WebApp.initDataUnsafe;
+      } else {
+        document.getElementById('login_div').style.display = 'none';
+        return select_page('about');
+      }
+      if (initData?.start_param?.startsWith('hot-')) {
+        const tx_result = Buffer.from(window.Base58.decode(initData.start_param.substr(4))).toString();
+        try{
+          const res = await fetch('https://h4n.app/'+tx_result+'/response', {headers:{"content-type":"application/json"}});
+          const {data} = await res.json();
+          fetch('https://h4n.app/'+tx_result, {method:'DELETE', headers:{"content-type":"application/json"}});
+          const response = JSON.parse(data);
+          hot_acc = response.account_id;
+        } catch(err){
+          console.log(err)
+        }	
+        initData.start_param = '';
+      }
+      let params = new URLSearchParams(window.location.search.toLowerCase());
+      if (!params.get('account') && initData?.start_param?.length) params = new URLSearchParams(Buffer.from(window.Base58.decode(initData.start_param)).toString().toLowerCase());
+      bequest_account = params.get('account');
+      heir = params.get('heir');
+      if (!bequest_account){
+        bequest_account = window.localStorage.getItem('login');
+        if (!bequest_account || !bequest_account.length) return select_page('no_account');
+        if (addressValid(bequest_account,1)){
+          const is_account = await isAccount(bequest_account);
+          if (!is_account || is_account?.error) bequest_account = null;
+        } else bequest_account = null;
+        if (!bequest_account){
+          window.localStorage.removeItem('login');
+          return select_page('no_account');
+        }
+      } else if (!addressValid(bequest_account,1)) return message(bequest_account.split('.').length>2?'Wrong account name':'Bequest account must be a subaccount',1,1)
+      document.getElementById('login').innerHTML = bequest_account;
+	
+      owner_account  = bequest_account.split('.').slice(1).join('.');
+      if (!heir && hot_acc && owner_account!=hot_acc) heir = hot_acc;
+      const is_account = await isAccount(bequest_account);
+      if (!is_account) return select_page('no_account');
+      if (is_account?.error) return message('Error retrieving bequest account information',1);
+
+      const secret_key = window.localStorage.getItem(bequest_account+':key');
+      const creds = secret_key?.length ? nearApi.KeyPair.fromString(secret_key) : null;
+      const public_key = creds && creds.publicKey.toString();
+      const hash = await contractHash(bequest_account);
+      if (hash?.error){
+        if (!creds) return message('You have no key for install a contract',1);
+        if (! await keysList(bequest_account, 1, public_key)) return message('You have no key for install a contract',1);
+        if (!window.localStorage.getItem('login')) document.getElementById('logout').style.display = 'none';
+        return select_page('init');
+      }
+      if (hash!=core_hash) return message('Wrong contract is deployed on bequest account',1);
+		
+      const bequest_info = await view(bequest_account, 'state');
+      if (!bequest_info?.length || bequest_info?.error || !bequest_info[0]?.length) return message('Error retrieving bequest contract information',1);
+      let left, button_text;
+      try{
+        left = bequest_info[2]*1000 + bequest_info[1]*dayms - Date.now();
+        button_text = left<0 ? 'Access activated!' : (left>2*dayms ? Math.ceil(left/dayms) : Math.ceil(left/dayms*24)+' hours')+' of '+bequest_info[1]+' days left';
+      } catch(err){
+        return message('Error retrieving bequest contract information',1);
+      }
+      if (heir){
+        if (bequest_info[0].indexOf(heir)<0) return message(heir+' is not a heir of '+bequest_account,1,1);
+        if (left>0) return message('There are '+(left>2*dayms?Math.ceil(left/dayms)+' days':Math.ceil(left/dayms*24)+' hours')+' left to activate access to the inheritance.',0,1);
+        document.getElementById("inheritance_text").innerHTML = 'Log in Hot wallet from<br /><b>'+heir+'</b><br />for claim inheritance';
+        const secret_key = window.localStorage.getItem(bequest_account+':'+heir+':key');
+        const creds = secret_key?.length ? nearApi.KeyPair.fromString(secret_key) : null;
+        const active_func_key = creds && await keysList(heir, 2, creds?.publicKey?.toString());
+        if (!active_func_key) return select_page('login_inheritance')
+        const active_key = creds && await keysList(bequest_account, 1, creds?.publicKey?.toString());
+        if (active_key) document.getElementById("key_last").value = secret_key;	
+        return select_page(active_key?'show_key':'get_inheritance');
+      }
+      const active_key = public_key && await keysList(owner_account, 2, public_key);
+      if (!active_key || active_key.access_key.permission.FunctionCall.allowance.length<18) return select_page('sign');
+      const copy_icon = '<svg width="18" height="19" viewBox="0 0 18 19" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 7.48071H8.25C7.42157 7.48071 6.75 8.15229 6.75 8.98071V15.7307C6.75 16.5591 7.42157 17.2307 8.25 17.2307H15C15.8284 17.2307 16.5 16.5591 16.5 15.7307V8.98071C16.5 8.15229 15.8284 7.48071 15 7.48071Z" stroke="#2c3034" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M3.75 11.9807H3C2.60218 11.9807 2.22064 11.8227 1.93934 11.5414C1.65804 11.2601 1.5 10.8785 1.5 10.4807V3.73071C1.5 3.33289 1.65804 2.95136 1.93934 2.67005C2.22064 2.38875 2.60218 2.23071 3 2.23071H9.75C10.1478 2.23071 10.5294 2.38875 10.8107 2.67005C11.092 2.95136 11.25 3.33289 11.25 3.73071V4.48071" stroke="#2c3034" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>'
+      document.getElementById('main_content').innerHTML = '<div style=""><h2>heirs accounts</h2><div style="padding-left:30px;">'+bequest_info[0].map(e => '<div style="margin:7px; cursor:copy;" onclick="create_heir_link(\''+e+'\');">'+e+' '+copy_icon+'</div>').join('')+'</div><div style="margin-top:40px;"><button style="width:100%; height:100px;" class="button" onclick="alive();">'+button_text+'</button></div></div>';
+      select_page('main');
+    }
+    async function alive(){
+      const secret_key = window.localStorage.getItem(bequest_account+':key');
+      if (!secret_key?.length) return alert_m('Stored key not found');
+      select_page('loading');
+      const result = await call(owner_account, bequest_account, secret_key, 'alive');
+      if (result.error) return message('Something went wrong',1,1);
+      await sleep(1000);
+      window.location.href = window.location.pathname;
+    }
+    async function destroy(){
+      try{
+        window.Telegram.WebApp.showConfirm('Delete bequest account?', async (res) => {
+          if (res){
+            const secret_key = window.localStorage.getItem(bequest_account+':key');
+            if (!secret_key?.length) return alert_m('No key found');
+            select_page('loading');
+            const result = await call(owner_account, bequest_account, secret_key, 'delete');
+            if (result.error) return message('Something went wrong',1,1);
+            window.Telegram.WebApp.close();
+          }
+        });
+      } catch(err){
+        return alert_m('Function is not supported in this version of Telegram');
+      }
+    }
+    async function create(){
+      const heirs = document.getElementById('heirs').value.replace(/[\r\n\,\;]/g,' ').replace(/\s+/g,' ').trim().split(' ').map(e => e.trim().toLowerCase());
+      if (heirs.length<1) return alert_m("No heir accounts");
+      if (heirs.length>5) return alert_m("No more than 5 heir accounts");
+      for (const acc of heirs) if (!addressValid(acc)) return alert_m("Wrong name: "+acc);
+      for (const acc of heirs) if (isDifferentNet(acc, bequest_account)) return alert_m("Accounts on different networks");
+      const is_accounts = await Promise.all(heirs.map(isAccount));
+      for (k in is_accounts) if (!is_accounts[k] || is_accounts[k].error) return alert_m(is_accounts[k]?'Error retrieving '+heirs[k]:heirs[k]+' account doesn\'t exist');
+      const days = document.getElementById('period').value;
+      if (!days || isNaN(days) || +days<3) return alert_m("Period can\'t be less than 3 days");
+		
+      const secret_key = window.localStorage.getItem(bequest_account+':key');
+      if (!secret_key?.length) return alert_m('You have no key for install a contract',1);
+      const creds = nearApi.KeyPair.fromString(secret_key);
+      if (! await keysList(bequest_account, 1, creds.publicKey.toString())) return alert_m('You have no key for install a contract',1);
+		
+      select_page('loading');
+      const res = await window.fetch('/deploy', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({account:bequest_account, key:secret_key, heirs, days})}); 
+      if (!res.ok) return message('Service is temporarily unavailable',1,1);
+      const data = await res.json();
+      if (data.error) return message(data.error,1,1);
+      await sleep(4000);
+      window.location.href = window.location.pathname;
+    }  
+    async function claim(){
+      const secret_key = window.localStorage.getItem(bequest_account+':'+heir+':key');
+      if (!secret_key?.length) return alert_m('Stored key not found');
+      const creds = nearApi.KeyPair.fromString(secret_key);
+      select_page('loading');
+      const result = await call(heir, bequest_account, secret_key, 'unlock', {public_key:creds.publicKey.toString()});
+      message(result.text ?? 'Something went wrong', result.error?1:0, '/?account='+bequest_account+'&heir='+heir);
+    }
+    function logout(){
+      window.localStorage.removeItem('login');
+      window.location.href = window.location.pathname;
+    }
+    async function create_func_key(for_heir){
+      const creds = nearApi.KeyPair.fromRandom('ed25519');
+      const res = await window.fetch('/create', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({account:bequest_account, key:creds.publicKey.toString(), only_key:1, signer:for_heir?heir:null})}); 
+      if (!res.ok) return alert_m('Service is temporarily unavailable')
+      const data = await res.json();
+      if (data.error) return alert_m(data.error)
+      window.localStorage.setItem(bequest_account+(for_heir?':'+heir:'')+':key', creds.secretKey);
+      window.localStorage.setItem('login', bequest_account);
+      window.location.href = data.url;
+    }
+    async function no_account(){
+      let data
+      const account = document.getElementById('bequest_account').value?.toLowerCase();
+      if (!account?.length) return alert_m("Enter bequest account name")
+      if (!addressValid(account,1)) return alert_m(account.split('.').length>2?'Wrong bequest account name':'Bequest account must be a subaccount')
+      const is_account = await isAccount(account);
+      if (is_account?.error) return alert_m('Error retrieving account information');
+      if (!is_account){
+        const creds = nearApi.KeyPair.fromRandom('ed25519');
+        const res = await window.fetch('/create', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({account, key:creds.publicKey.toString()})}); 
+        if (!res.ok) return alert_m('Service is temporarily unavailable')
+        data = await res.json();
+        if (data.error) return alert_m(data.error)
+        window.localStorage.setItem(account+':key', creds.secretKey);
+      }
+      window.localStorage.setItem('login', account);
+      window.location.href = data?.url ?? window.location.pathname;
+    }
+    function create_heir_link(heir_acc){
+      const t = document.createElement("textarea");
+      t.innerHTML =  'https://t.me/bequest_bot/bequest?startapp='+window.Base58.encode(Buffer.from('?account='+bequest_account+'&heir='+heir_acc)).toString();
+      document.body.appendChild(t),t.select();
+      document.execCommand("copy");
+      document.body.removeChild(t)
+      alert_m('URL was copied',1);
+    }
+    async function get_inheritance(){
+      const heir = document.getElementById('heir_account')?.value?.toLowerCase();
+      if (!heir?.length) return alert_m("Enter your account");
+      if (!addressValid(heir)) return alert_m("Wrong account format");
+      if (isDifferentNet(heir, bequest_account)) return alert_m("Accounts on different networks");
+      let is_account = await isAccount(heir);
+      if (!is_account || is_account?.error) return alert_m(is_account?'Error retrieving account data':'Account does not exist')
+      window.location.href = window.location.pathname+'?account='+bequest_account+'&heir='+heir;
+    }
+    function copy_key(tag) {
+      const copyText = document.getElementById(tag);
+      copyText.select();
+      document.execCommand("copy");
+      copyText.selectionStart = copyText.selectionEnd;
+      alert_m('Private key was copied',1);
+    }	
+    function alert_m(text, black) {
+      const e = document.getElementById('alert-info');
+      e.innerHTML = text;
+      e.style.top  = window.scrollY+'px';
+      if (black) e.style['background-color'] = 'black';
+      e.style.display = '';
+      setTimeout(function() {e.style.display = 'none';},3000);		
+    }
+    function message(text, red, button){
+      const mess = document.getElementById('message_text')
+      mess.innerHTML = text;
+      if (red) mess.style.color = 'red';
+      if (button) document.getElementById('return_url').href = typeof button == 'string' ? button : '#'
+      else document.getElementById('return').style.display="none";
+      select_page('message');
+    }
+    async function isAccount(accountId){
+      try{
+        const keyStore = new nearApi.keyStores.InMemoryKeyStore();
+        const near = await nearApi.connect({deps:{keyStore},nodeUrl:nodeUrl(network(accountId))});
+        const account = await near.account(accountId);
+        return await account.state();
+      } catch(err){
+        return err.type!='AccountDoesNotExist'?{error:err.toString()}:null;
+      }
+    }
+    async function contractHash(accountId){
+      try{
+        const provider = new nearApi.providers.JsonRpcProvider({url:nodeUrl(network(accountId))});
+        const code = await provider.query({request_type:'view_code', account_id:accountId, finality:'final'});
+        return code?.hash
+      } catch(err) {
+        console.log(err)
+        return {error:err.toString()}
+      }
+    }	
+    async function keysList(accountId, full=1, key) {
+      const res = await fetch(nodeUrl(network(accountId)), {method: "POST", body:JSON.stringify({jsonrpc:"2.0", id:"dontcare", method:"query", params:{request_type:"view_access_key_list", finality:"final", account_id:accountId}}), headers: {"content-type":"application/json"}})
+      if (res.ok === false) return []
+      const data = await res.json()
+      const list = data.result.keys.filter(key => !full || (full==1 && key.access_key.permission=='FullAccess') || (full>1 && key.access_key.permission!='FullAccess'))
+      return key ? list.find(e => e.public_key == key) : list
+    }
+    async function view(accountId, method, args={}){
+      try{
+        const provider = new nearApi.providers.JsonRpcProvider({url:nodeUrl(network(accountId))})
+        const account = new nearApi.Account({provider:provider})
+        return await account.viewFunction(accountId,method,args)
+      } catch(err) {
+        console.log(err)
+        return {error:err}
+      }
+    }
+    async function call(accountId, contract, key, method, args={}, attachedDeposit='0', gas='100000000000000') {
+      try{
+        const net = network(accountId);
+        const keyPair = nearApi.utils.KeyPair.fromString(key)
+        const keyStore = new nearApi.keyStores.InMemoryKeyStore()
+        keyStore.setKey(net,accountId,keyPair)
+        const near = await nearApi.connect({deps:{keyStore}, networkId:net, nodeUrl:nodeUrl(net)})
+        const account = await near.account(accountId)
+        const tx = await account.functionCall({contractId:contract, methodName:method, args:args, gas:gas, attachedDeposit}) 
+        return {text:tx.status.Failure || Buffer.from(tx.status.SuccessValue,'base64').toString().replace(/\"/g,''), error:tx.status.Failure}
+      } catch(err) {
+        const errtext = err.toString().replace(/[\{\}\"]/g,'').split('\\n').pop()
+        console.log('errtext',errtext)
+        return {error:1, text:errtext.length ? errtext : err.type || err.toString()}
+      }
+    }
+    function select_page(page){
+      const pages = ['main','init','settings','message','loading','get_inheritance','no_account','sign','show_key','login_inheritance','about'];
+      for (const p of pages) document.getElementById(p).style.display = p == page?'':'none';
+    }
+    </script>
+  </body>
+</html>
