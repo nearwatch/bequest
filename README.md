@@ -1,4 +1,4 @@
-# bequest
+# Bequest
 The service is intended for situations where you need to insure against loss of access to cryptocurrency funds due to death, illness, imprisonment, loss of keys.
 
 The way the service works is simple: a special insurance account is created, all keys of the owner account are copied, a contract is established with the registered heir accounts, as well as an activation period in case of inactivity of the owner.
